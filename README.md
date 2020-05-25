@@ -1,6 +1,8 @@
-# election
+# Election
 
-## Project setup
+Election-tracker for the 2020 New Zealand General Election.
+
+### Project setup
 ```
 npm install
 ```
@@ -19,6 +21,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

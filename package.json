@@ -1,6 +1,7 @@
 {
   "name": "election",
   "version": "0.1.0",
+  "author": "Oscar Sims",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
