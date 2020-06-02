@@ -1,8 +1,8 @@
 {
   "name": "election",
   "version": "0.1.0",
-  "author": "Oscar Sims",
   "private": true,
+  "author": "Oscar Sims",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -29,6 +29,7 @@
     "sass": "^1.26.3",
     "sass-loader": "^8.0.2",
     "typescript": "~3.8.3",
+    "vue-cli-plugin-tailwind": "~1.4.1",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

@@ -1,6 +1,6 @@
 # Election
 
-Election-tracker for the 2020 New Zealand General Election.
+Election tracker for the 2020 New Zealand General Election.
 
 ### Project setup
 ```
