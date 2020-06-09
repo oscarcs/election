@@ -6,6 +6,7 @@ import './plugins/vue-sidebar-menu';
 import Buefy from 'buefy';
 import router from './router';
 
+Vue.config.ignoredElements = [/^ion-/];
 Vue.config.productionTip = false;
 Vue.use(Buefy);
 

@@ -3,20 +3,29 @@
         id="app"
         :class="[{ 'collapsed' : collapsed }, { 'onmobile' : isOnMobile }]"
     >
-        <b-navbar type="is-sidebar-dark">
+        <b-navbar type="is-darker">
             <template slot="brand">
-                <b-navbar-item>Election 2020</b-navbar-item>
+                <b-navbar-item>New Zealand Election 2020</b-navbar-item>
             </template>
-            <template slot="start">
+            <!-- <template slot="start">
                 <b-navbar-item>Home</b-navbar-item>
-            </template>
+            </template> -->
         </b-navbar>
-        <router-view />
+        
+        <section class="section">
+            <router-view />
+        </section>
+
         <sidebar-menu
             :menu="menu"
             :collapsed="collapsed"
             @toggle-collapse="onToggleCollapse"
-        />
+            :disableHover="true"
+        >
+            <template slot="toggle-icon">
+                <ion-icon name="menu-outline"></ion-icon>
+            </template>
+        </sidebar-menu>
     </div>
 </template>
 
@@ -24,16 +33,18 @@
 export default {
     data() {
         return {
-            collapsed: true,
+            collapsed: false,
+            isOnMobile: false,
             menu: [
-                {
-                    header: false,
-                    hiddenOnCollapse: true
-                },
                 {
                     href: '/',
                     title: 'Dashboard',
-                    icon: 'fa fa-user'
+                    icon: {
+                        element: 'ion-icon',
+                        attributes: {
+                            name: 'home'
+                        }
+                    }
                 }
             ]
         };
@@ -47,21 +58,54 @@ export default {
 </script>
 
 <style lang="scss">
-@use "sass:map";
+$orange: #f89828;
+$primary-color: $orange;
 
-@import "vue-sidebar-menu/src/scss/vue-sidebar-menu.scss";
+@import "vue-sidebar-menu/src/scss/_variables.scss";
+@import "~bulma/sass/utilities/_all";
 
-// map.merge($colors, ());
+$colors: (
+    "white": ($white, $black),
+    "black": ($black, $white),
+    "light": ($light, $light-invert),
+    "dark": (lighten($dark, 5%), $dark-invert),
+    "darker": ($base-bg, findColorInvert($base-bg)),
+    "primary": ($primary, $primary-invert),
+    "info": ($info, $info-invert),
+    "success": ($success, $success-invert),
+    "warning": ($warning, $warning-invert),
+    "danger": ($danger, $danger-invert),
+    "orange": ($orange, #fff)
+);
+
+$section-padding: 1.5rem 1.5rem;
 
 @import "~bulma/bulma.sass";
 @import "~buefy/src/scss/buefy";
+@import "vue-sidebar-menu/src/scss/vue-sidebar-menu.scss";
 
 #app {
-  padding-left: 350px;
-  transition: 0.3s ease;
+    padding-left: 350px;
+    transition: 0.3s ease;
 }
 
 #app.collapsed {
-  padding-left: 50px;
+    padding-left: 50px;
 }
+
+.v-sidebar-menu {
+    .vsm--icon {
+        padding: 4px !important;
+        height: 22px !important;
+        width: 22px !important;
+        line-height: 30px !important;
+    }
+
+    .vsm--toggle-btn {
+        ion-icon {
+            font-size: 1.5rem;
+        }
+    }
+}
+
 </style>
