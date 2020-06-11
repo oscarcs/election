@@ -40,7 +40,7 @@
                 </div>
             </div>      
             <div class="tile is-parent is-12">
-                <article class="tile is-child notification is-charcoal">
+                <article class="tile is-child notification is-slate">
                     <p class="is-size-6">Overview</p>
                 </article>
             </div>

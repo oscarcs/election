@@ -54,7 +54,37 @@ export default {
                     icon: {
                         element: 'ion-icon',
                         attributes: {
-                            name: 'bar-chart'
+                            name: 'stats-chart'
+                        }
+                    }
+                },
+                {
+                    href: '/lists',
+                    title: 'Party Lists',
+                    icon: {
+                        element: 'ion-icon',
+                        attributes: {
+                            name: 'list'
+                        }
+                    }
+                },
+                {
+                    href: '/coalitions',
+                    title: 'Coalition Builder',
+                    icon: {
+                        element: 'ion-icon',
+                        attributes: {
+                            name: 'trophy'
+                        }
+                    }   
+                },
+                {
+                    href: '/electorates',
+                    title: 'Electorates',
+                    icon: {
+                        element: 'ion-icon',
+                        attributes: {
+                            name: 'ribbon'
                         }
                     }
                 }
@@ -74,21 +104,27 @@ export default {
 
 $family-sans-serif: Jost, BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 
+
 $orange: #eb811a;
 $orange2: #ec700a;
 $orange3: #da5a05;
 $red: #d82c20;
+$darkred: #5c0006;
 $blue: #2C8ACA;
+$lightblue: #56D2FF;
 $yellow: #FFD100;
 $green: #2CC84D;
 $charcoal: #1e1e21;
-$lightblue: #56D2FF;
-$darkred: #5c0006;
+$slate: #2a2a2e;
 
 $primary-color: $orange;
+$base-bg: $slate;
+
+@import "~bulma/sass/utilities/_all";
+
+$mobile-item-bg: $charcoal;
 
 @import "vue-sidebar-menu/src/scss/_variables.scss";
-@import "~bulma/sass/utilities/_all";
 
 $colors: (
     "white": ($white, $black),
@@ -109,6 +145,7 @@ $colors: (
     "yellow": ($yellow, findColorInvert($yellow)),
     "green": ($green, findColorInvert($green)),
     "charcoal": ($charcoal, findColorInvert($charcoal)),
+    "slate": ($slate, findColorInvert($slate)),
 
     "orange": ($orange,findColorInvert($orange)),
     "orange2": ($orange2,findColorInvert($orange2)),

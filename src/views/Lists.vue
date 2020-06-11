@@ -2,7 +2,7 @@
     <div class="tile is-ancestor">
         <div class="tile is-parent is-12">
             <article class="tile is-child notification is-slate">
-                <p class="is-size-6">Polling</p>
+                <p class="is-size-6">Party Lists</p>
             </article>
         </div>
     </div>
@@ -10,7 +10,7 @@
 
 <script>
 export default {
-    name: "Polling",
+    name: "Lists",
     components: {},
     computed: {
 
