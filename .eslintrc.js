@@ -17,6 +17,7 @@ module.exports = {
         'semi': ['error'],
         'indent': ['error', 4],
         'linebreak-style': ['error', 'windows'],
-        'brace-style': ['error', 'stroustrup']
+        'brace-style': ['error', 'stroustrup'],
+        '@typescript-eslint/no-explicit-any': 'off'
     }
 };
