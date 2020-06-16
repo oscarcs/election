@@ -8,12 +8,15 @@
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue';
+
+const Electorates = Vue.extend({
     name: "Electorates",
     components: {},
     computed: {
-
+        
     }
-};
+});
+export default Electorates;
 </script>

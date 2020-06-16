@@ -7,9 +7,6 @@
             <template slot="brand">
                 <b-navbar-item>New Zealand Election 2020</b-navbar-item>
             </template>
-            <!-- <template slot="start">
-                <b-navbar-item>Home</b-navbar-item>
-            </template> -->
         </b-navbar>
         
         <section class="section">
@@ -31,8 +28,10 @@
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue';
+
+const App = Vue.extend({
     data() {
         return {
             collapsed: true,
@@ -92,18 +91,19 @@ export default {
         };
     },
     methods: {
-        onToggleCollapse (collapsed) {
+        onToggleCollapse (collapsed: boolean) {
             this.collapsed = collapsed;
         }
     }
-};
+});
+export default App;
 </script>
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;600&display=swap');
 
-$family-sans-serif: Jost, BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-
+$family-sans-serif: Jost, BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 
 $orange: #eb811a;
 $orange2: #ec700a;

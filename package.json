@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 3000",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -13,6 +13,7 @@
     "countup.js": "^2.0.5",
     "moment": "^2.26.0",
     "vue": "^2.6.11",
+    "vue-chartjs": "^3.5.0",
     "vue-countup-v2": "^4.0.0",
     "vue-router": "^3.2.0",
     "vue-sidebar-menu": "^4.6.0"
