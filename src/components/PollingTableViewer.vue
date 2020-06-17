@@ -1,7 +1,6 @@
 <template>
-    <div class="pt-1">
+    <div class="dark pt-1">
         <b-table
-            class="dark"
             :data="polls"
             :narrowed="true"
             :hoverable="true"
