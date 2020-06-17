@@ -34,7 +34,7 @@
             <div class="tile is-parent is-12">
                 <article class="tile is-child notification is-slate">
                     <p class="is-size-5">Overview</p>
-                    <p v-html="whosWinningText"></p>
+                    <p class="mt-1 mb-1" v-html="whosWinningText"></p>
                     <PollingChartViewer />
                 </article>
             </div>

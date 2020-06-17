@@ -1,6 +1,7 @@
 <template>
-    <div style="padding-top: 1rem">
+    <div class="pt-1">
         <b-table
+            class="dark"
             :data="polls"
             :narrowed="true"
             :hoverable="true"
@@ -61,31 +62,3 @@ export default PollingViewer.extend({
     }
 });
 </script>
-
-<style lang="scss">
-@import '@/styles/global.scss';
-
-.table {
-    color: $light;
-    background-color: $slate;
-
-    td {
-        border-color: $charcoal;
-    }
-
-    th {
-        border-color: $charcoal;
-    }
-
-    &.is-hoverable tbody tr:not(.is-selected):hover {
-        color: $light;
-        background-color: $charcoal;
-    }
-
-    thead {
-        th {
-            color: white;
-        }
-    }
-}
-</style>

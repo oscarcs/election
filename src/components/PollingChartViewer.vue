@@ -1,5 +1,5 @@
 <template>
-    <div style="padding-top: 1rem">
+    <div class="pt-1">
         <Chart 
             :options="options"
             :chartdata="chartdata"
