@@ -53,8 +53,50 @@ export class Util {
         }
     }
 
-    public static isParty(party: string): boolean {
-        return ['NAT', 'LAB', 'NZF', 'GRN', 'ACT', 'NCP', 'MRI', 'TOP'].includes(party.toUpperCase());
+    public static isParty(abbr: string): boolean {
+        return ['NAT', 'LAB', 'NZF', 'GRN', 'ACT', 'NCP', 'MRI', 'TOP'].includes(abbr.toUpperCase());
+    }
+
+    public static getPartyName(abbr: string): string {
+        const fullNames: any = {
+            'NAT': 'National',
+            'LAB': 'Labour',
+            'GRN': 'Green',
+            'NZF': 'NZ First',
+            'ACT': 'ACT',
+            'NCP': 'New Conservative',
+            'MRI': 'Māori Party',
+            'TOP': 'The Opportunities Party'
+        };
+        return fullNames[abbr.toUpperCase()] ?? abbr;
+    }
+
+    public static getPartyCSSName(abbr: string): string {
+        const cssNames: any = {
+            'NAT': 'national',
+            'LAB': 'labour',
+            'GRN': 'greens',
+            'NZF': 'nzf',
+            'ACT': 'act',
+            'NCP': 'nc',
+            'MRI': 'maori',
+            'TOP': 'grey'
+        };
+        return cssNames[abbr.toUpperCase()] ?? abbr;
+    }
+
+    public static getPartyTextCSSName(abbr: string): string {
+        const cssNames: any = {
+            'NAT': 'national',
+            'LAB': 'labour',
+            'GRN': 'greens',
+            'NZF': 'grey-light',
+            'ACT': 'act',
+            'NCP': 'nc',
+            'MRI': 'maori',
+            'TOP': 'grey'
+        };
+        return cssNames[abbr.toUpperCase()] ?? abbr;
     }
 
     public static calculateMMP(parties: Party[], electorates: PartyElectorates[], totalVotes: number): Parliament {
@@ -127,40 +169,71 @@ export class Util {
             
             for (const i in parties) {
                 const electorateSeats = electorates.find(x => x.name === parties[i].name);
-        
+
                 if (parties[i].votes >= totalVotes * 0.05 || (typeof electorateSeats !== 'undefined' && electorateSeats.seats > 0)) {
                     validParties.push(parties[i]);
                 }
             }
-    
+
             for (const i in electorates) {
                 const party = parties.find(x => x.name === electorates[i].name);
                 if (typeof party === 'undefined') {
                     numQuotas -= electorates[i].seats;
                 }
             }
+
             return calculateQuotas(numQuotas, validParties, electorates);
         };
-    
+
         return getValidParties(parties, electorates, totalVotes);
+    }
+
+    public static calculatePollingAverage(polls: any[]) {
+        const averagePoll: any = {};
+        for (const poll of polls) {
+            for (const party of Object.keys(poll)) {
+                if (!Util.isParty(party)) {
+                    continue;
+                }
+
+                if (!averagePoll[party]) {
+                    averagePoll[party] = [];
+                }
+
+                if (!isNaN(parseFloat(poll[party]))) {
+                    averagePoll[party].push(parseFloat(poll[party]));
+                }
+            }
+        }
+
+        for (const party of Object.keys(averagePoll)) {
+            const numElements = averagePoll[party].length;
+            averagePoll[party] = averagePoll[party].reduce((acc: number, val: number) => acc + val);
+            averagePoll[party] = averagePoll[party] / numElements;
+        }
+
+        return averagePoll;
     }
 
     public static calculateSeatsFromPoll(poll: any, partyElectorates: PartyElectorates[]): Parliament {
         const parties: Party[] = [];
+        const scaleFactor = 10000;
         
         for (const party of Object.keys(poll)) {
             if (!Util.isParty(party)) {
                 continue;
             }
 
-            parties.push({
-                name: party.toUpperCase(),
-                votes: poll[party] * 10000,
-                quota: 0
-            });
+            if (!isNaN(parseFloat(poll[party]))) {
+                parties.push({
+                    name: party.toUpperCase(),
+                    votes: parseFloat(poll[party]) * scaleFactor,
+                    quota: 0
+                });
+            }
         }
 
-        const total = parties.map(x => x.votes).reduce((acc, cur) => acc + cur);
+        const total = 100 * scaleFactor;
 
         return Util.calculateMMP(parties, partyElectorates, total);
     }

@@ -8,28 +8,17 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import PollingViewer, { Dataset } from '@/components/PollingViewer';
 import Chart from '@/components/Chart.vue';
-import Config from '@/config';
 import { Util } from '@/util';
 
-interface Dataset {
-    label: string;
-    data: number[];
-    borderColor?: string;
-    fill?: boolean;
-    spanGaps?: boolean;
-}
-
-export default Vue.extend({
-    name: "PollingViewer",
+export default PollingViewer.extend({
+    name: "PollingChartViewer",
     components: {
         Chart
     },
     data() {
         return {
-            polls: [],
-            loading: true,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -41,15 +30,12 @@ export default Vue.extend({
             }
         };
     },
-    mounted () {
-        fetch(`${Config.baseUrl}/polls`)
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
-                this.loading = false;
-                this.processPollResults(data.rows.reverse());
-            });
+    watch: {
+        polls: function(polls, oldPolls) {
+            if (polls.length !== oldPolls.length) {
+                this.processPollResults(polls.splice(0, 9).reverse());
+            }
+        }
     },
     methods: {
         processPollResults(polls: any[]) {

@@ -35,7 +35,7 @@
                 <article class="tile is-child notification is-slate">
                     <p class="is-size-5">Overview</p>
                     <p v-html="whosWinningText"></p>
-                    <PollingViewer />
+                    <PollingChartViewer />
                 </article>
             </div>
         </div>
@@ -46,7 +46,7 @@
 import Vue from 'vue';
 import ICountUp from 'vue-countup-v2';
 import moment from 'moment';
-import PollingViewer from '@/components/PollingViewer.vue';
+import PollingChartViewer from '@/components/PollingChartViewer.vue';
 import Config from '@/config';
 import { Util, Parliament } from '@/util';
 
@@ -54,11 +54,12 @@ export default Vue.extend({
     name: 'Dashboard' as string,
     components: {
         ICountUp,
-        PollingViewer
+        PollingChartViewer
     },
     data() {
         return {
-            predictedResult: {} as Parliament
+            predictedResult: {} as Parliament,
+            polls: []
         };
     },
     mounted () {
@@ -67,8 +68,10 @@ export default Vue.extend({
                 return response.json();
             })
             .then(data => {
-                const poll = data.rows[data.rows.length - 1];
-                this.predictedResult = Util.calculateSeatsFromPoll(poll, Util.guessElectorateSeats(poll));
+                this.polls = data.rows.slice(0, 5);
+                const pollingAverage = Util.calculatePollingAverage(this.polls);
+                this.predictedResult = Util.calculateSeatsFromPoll(pollingAverage, Util.guessElectorateSeats(pollingAverage));
+                this.predictedResult.parties.sort((a, b) => b.quota - a.quota);
             });
     },
     methods: {
@@ -101,14 +104,26 @@ export default Vue.extend({
         },
 
         whosWinningText(): string {
-            // if (this.predictedResult.parties) {
-            //     return `<span class="is-labour">Labour</span> looks like they will win the election ` + 
-            //         `with <b>${this.predictedResult.parties.find(x => x.name === 'LAB')?.quota ?? 0}</b> seats.`;
-            // }
+            let str = '';
             if (this.predictedResult.parties) {
-                return this.predictedResult.parties.map(x => `${x.name}: ${x.quota}`).join(' | ');
+                str = `Average number of seats on last ${this.polls.length} polls: `;
+                
+                str += this.predictedResult.parties.map(x => {
+                    return `<span class="has-text-${Util.getPartyTextCSSName(x.name)}">${Util.getPartyName(x.name)} ${x.quota}</span>`;
+                }).join(', ') + '.';
+
+                const topParty = this.predictedResult.parties[0];
+                if (topParty.quota >= this.predictedResult.seats / 2) {
+                    str += '<br />';
+
+                    const clazz = Util.getPartyTextCSSName(topParty.name);
+                    const name = Util.getPartyName(topParty.name);
+
+                    str += `<span class="has-text-${clazz}">${name}</span> will likely be able to govern alone ` + 
+                        `in a ${this.predictedResult.seats}-seat Parliament.`;
+                }
             }
-            return '';
+            return str;
         }
     }
 });
