@@ -3,7 +3,27 @@
         <div class="tile is-parent is-12">
             <article class="tile is-child notification is-slate">
                 <p class="is-size-5">Electorates</p>
-
+                <p><i>The deadline to submit nominations for the electorates is 21 August.</i></p>
+                <b-field class="mt-1 mb-1 dark" style="margin-bottom: 1.5rem">
+                    <b-input
+                        placeholder="Search for an electorate..."
+                        v-model="searchQuery"
+                        @input="calculateSearchQuery"
+                        expanded
+                    ></b-input>
+                    <p class="control" @click="showMarginalElectorates">
+                        <b-button class="button is-primary">Show Likely Marginal Electorates</b-button>
+                    </p>
+                </b-field>
+                <div class="notification is-charcoal" v-for="(electorate, name) of searchQueryResults" :key="name">
+                    <p class="is-size-5 mb-1">{{name}}</p>
+                    <p class="mb-1">2017: {{electorate.incumbent}} - <span v-html="displayMargin(electorate.margin)"></span></p>
+                    <template v-for="(candidate, party) of getCandidates(electorate)">
+                        <span class="tag is-medium mr-1 mb-1" :class="[`is-${getPartyCSSName(party)}`]" :key="party">
+                            {{getPartyName(party)}}— <b>{{candidate}}</b>
+                        </span>
+                    </template>
+                </div>
             </article>
         </div>
     </div>
@@ -12,6 +32,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Config from '@/config';
+import { Util } from '@/util';
 
 export default Vue.extend({
     name: "Electorates",
@@ -21,7 +42,9 @@ export default Vue.extend({
     },
     data: function() {
         return {
-            
+            electorates: {},
+            searchQuery: '',
+            searchQueryResults: {}
         };
     },
     mounted () {
@@ -30,8 +53,88 @@ export default Vue.extend({
                 return response.json();
             })
             .then(data => {
-                console.log(data);
+                this.electorates = data;
             });
+    },
+    methods: {
+        getPartyName: function(abbr: string): string {
+            return Util.getPartyName(abbr);
+        },
+
+        getPartyCSSName: function(abbr: string): string {
+            return Util.getPartyCSSName(abbr);
+        },
+
+        getPartyTextCSSName: function(abbr: string): string {
+            return Util.getPartyTextCSSName(abbr);
+        },
+
+        isParty: function(party: string): boolean {
+            return Util.isParty(party);
+        },
+
+        getCandidates(electorate: any): any {
+            const candidates = {};
+            for (const party of Object.keys(electorate)) {
+                if (this.isParty(party) && electorate[party] !== '') {
+                    (candidates as any)[party] = electorate[party];
+                }
+            }
+            return candidates;
+        },
+
+        calculateSearchQuery: function() {
+            const queryResults = {};
+            if (this.searchQuery !== '' && this.searchQuery.length > 1) {
+                for (const electorate of Object.keys(this.electorates)) {
+                    // Remove accents
+                    const latinized = electorate.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    
+                    if (latinized.toLowerCase().includes(this.searchQuery.toLowerCase())) {
+                        (queryResults as any)[electorate] = (this.electorates as any)[electorate];
+                    }
+                }
+            }
+            this.searchQueryResults = queryResults;
+        },
+
+        showMarginalElectorates: function() {
+            const queryResults = {};
+            for (const electorate of Object.keys(this.electorates)) {
+                // manual overrides
+                if (['Northland', 'Te Tai Hauāuru', 'Ōhāriu'].includes(electorate)) {
+                    continue;
+                }
+
+                const margin = (this.electorates as any)[electorate]['margin'].split('+')[1];
+                if (parseFloat(margin) <= 7.5) {
+                    (queryResults as any)[electorate] = (this.electorates as any)[electorate];
+                }
+            }
+            this.searchQueryResults = queryResults;
+        },
+
+        displayMargin(margin: string): string {
+            const incumbent = margin.split('/')[0];
+            const topChallenger = margin.split('/')[1].split('+')[0];
+            const pctMargin = margin.split('/')[1].split('+')[1];
+
+            const incumbentName = this.getPartyName(incumbent);
+            const topChallengerName = this.getPartyName(topChallenger);
+            const incumbentClass = this.getPartyTextCSSName(incumbent);
+            const topChallengerClass = this.getPartyTextCSSName(topChallenger);
+
+            return `
+                <span class="has-text-${incumbentClass}">${incumbentName}</span> over
+                <span class="has-text-${topChallengerClass}">${topChallengerName}</span> 
+                by <b>${pctMargin}%</b>
+            `;
+        }
+    },
+    watch: {
+        electorates: function() {
+            this.calculateSearchQuery();
+        }
     }
 });
 </script>

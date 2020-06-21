@@ -66,7 +66,8 @@ export class Util {
             'ACT': 'ACT',
             'NCP': 'New Conservative',
             'MRI': 'Māori Party',
-            'TOP': 'The Opportunities Party'
+            'TOP': 'The Opportunities Party',
+            'MAN': 'Mana'
         };
         return fullNames[abbr.toUpperCase()] ?? abbr;
     }
@@ -93,7 +94,7 @@ export class Util {
             'NZF': 'grey-light',
             'ACT': 'act',
             'NCP': 'nc',
-            'MRI': 'maori',
+            'MRI': 'lightred',
             'TOP': 'grey'
         };
         return cssNames[abbr.toUpperCase()] ?? abbr;

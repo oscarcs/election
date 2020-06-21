@@ -8,6 +8,7 @@ $orange2: #ec700a;
 $orange3: #da5a05;
 $red: #d82c20;
 $darkred: #5c0006;
+$lightred: #f15a4f;
 $blue: #2C8ACA;
 $lightblue: #56D2FF;
 $yellow: #FFD100;
@@ -38,6 +39,7 @@ $colors: (
     
     "red": ($red, findColorInvert($red)),
     "darkred": ($darkred, findColorInvert($darkred)),
+    "lightred": ($lightred, findColorInvert($lightred)),
     "blue": ($blue, findColorInvert($blue)),
     "lightblue": ($lightblue, findColorInvert($lightblue)),
     "yellow": ($yellow, findColorInvert($yellow)),
@@ -54,7 +56,7 @@ $colors: (
     "greens": ($green, findColorInvert($green)),
     "nzf": ($charcoal, findColorInvert($charcoal)),
     "nc": ($lightblue, findColorInvert($lightblue)),
-    "maori": ($darkred, findColorInvert($darkred))
+    "maori": ($darkred, findColorInvert($darkred)),
 );
 
 $section-padding: 1.5rem 1.5rem;
@@ -87,29 +89,42 @@ $section-padding: 1.5rem 1.5rem;
     }
 }
 
-.dark .table {
-    color: $light;
-    background-color: $slate;
-
-    td {
-        border-color: $charcoal;
+.dark {
+    .table {
+        color: $light;
+        background-color: $slate;
+    
+        td {
+            border-color: $charcoal;
+        }
+    
+        th {
+            border-color: $charcoal;
+        }
+    
+        &.is-hoverable tbody tr:not(.is-selected):hover {
+            color: $light;
+            background-color: $charcoal;
+        }
+    
+        thead {
+            th {
+                color: white;
+            }
+        }
     }
 
-    th {
-        border-color: $charcoal;
-    }
-
-    &.is-hoverable tbody tr:not(.is-selected):hover {
+    .input {
         color: $light;
         background-color: $charcoal;
-    }
+        border-color: $charcoal;
 
-    thead {
-        th {
+        &::placeholder {
             color: white;
         }
     }
 }
+
 
 .mt-1 {
     margin-top: 1rem;
