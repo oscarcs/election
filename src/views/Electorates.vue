@@ -17,7 +17,10 @@
                 </b-field>
                 <div class="notification is-charcoal" v-for="(electorate, name) of searchQueryResults" :key="name">
                     <p class="is-size-5 mb-1">{{name}}</p>
-                    <p class="mb-1">2017: {{electorate.incumbent}} - <span v-html="displayMargin(electorate.margin)"></span></p>
+                    <p class="mb-1">
+                        2017: {{!electorate.incumbent ? 'No incumbent' : electorate.incumbent}} - 
+                        <span v-html="displayMargin(electorate.margin)"></span>
+                    </p>
                     <template v-for="(candidate, party) of getCandidates(electorate)">
                         <span class="tag is-medium mr-1 mb-1" :class="[`is-${getPartyCSSName(party)}`]" :key="party">
                             {{getPartyName(party)}}— <b>{{candidate}}</b>
@@ -107,7 +110,7 @@ export default Vue.extend({
                 }
 
                 const margin = (this.electorates as any)[electorate]['margin'].split('+')[1];
-                if (parseFloat(margin) <= 7.5) {
+                if (parseFloat(margin) <= 7.25) {
                     (queryResults as any)[electorate] = (this.electorates as any)[electorate];
                 }
             }
@@ -115,6 +118,10 @@ export default Vue.extend({
         },
 
         displayMargin(margin: string): string {
+            if (margin === 'new') {
+                return 'New Electorate';
+            }
+
             const incumbent = margin.split('/')[0];
             const topChallenger = margin.split('/')[1].split('+')[0];
             const pctMargin = margin.split('/')[1].split('+')[1];
