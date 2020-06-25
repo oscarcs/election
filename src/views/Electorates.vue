@@ -108,12 +108,12 @@ export default Vue.extend({
             const queryResults = {};
             for (const electorate of Object.keys(this.electorates)) {
                 // manual overrides
-                if (['Northland', 'Te Tai Hauāuru', 'Ōhāriu'].includes(electorate)) {
+                if (['Northland', 'Te Tai Hauāuru'].includes(electorate)) {
                     continue;
                 }
 
                 const margin = (this.electorates as any)[electorate]['margin'].split('+')[1];
-                if (parseFloat(margin) <= 7.25) {
+                if (parseFloat(margin) <= 7.25 || ['Taieri', 'Nelson'].includes(electorate)) {
                     (queryResults as any)[electorate] = (this.electorates as any)[electorate];
                 }
             }
