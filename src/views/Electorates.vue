@@ -14,11 +14,14 @@
                     <p class="control" @click="showMarginalElectorates">
                         <b-button class="button is-primary">Show Likely Marginal Electorates</b-button>
                     </p>
+                    <p class="control" @click="showAllElectorates">
+                        <b-button class="button is-orange3">Show All</b-button>
+                    </p>
                 </b-field>
                 <div class="notification is-charcoal" v-for="(electorate, name) of searchQueryResults" :key="name">
                     <p class="is-size-5 mb-1">{{name}}</p>
                     <p class="mb-1">
-                        2017: {{!electorate.incumbent ? 'No incumbent' : electorate.incumbent}} - 
+                        2017: <b>{{!electorate.incumbent ? 'No incumbent' : electorate.incumbent}}</b> - 
                         <span v-html="displayMargin(electorate.margin)"></span>
                     </p>
                     <template v-for="(candidate, party) of getCandidates(electorate)">
@@ -60,19 +63,19 @@ export default Vue.extend({
             });
     },
     methods: {
-        getPartyName: function(abbr: string): string {
+        getPartyName(abbr: string): string {
             return Util.getPartyName(abbr);
         },
 
-        getPartyCSSName: function(abbr: string): string {
+        getPartyCSSName(abbr: string): string {
             return Util.getPartyCSSName(abbr);
         },
 
-        getPartyTextCSSName: function(abbr: string): string {
+        getPartyTextCSSName(abbr: string): string {
             return Util.getPartyTextCSSName(abbr);
         },
 
-        isParty: function(party: string): boolean {
+        isParty(party: string): boolean {
             return Util.isParty(party);
         },
 
@@ -86,7 +89,7 @@ export default Vue.extend({
             return candidates;
         },
 
-        calculateSearchQuery: function() {
+        calculateSearchQuery() {
             const queryResults = {};
             if (this.searchQuery !== '' && this.searchQuery.length > 1) {
                 for (const electorate of Object.keys(this.electorates)) {
@@ -101,7 +104,7 @@ export default Vue.extend({
             this.searchQueryResults = queryResults;
         },
 
-        showMarginalElectorates: function() {
+        showMarginalElectorates() {
             const queryResults = {};
             for (const electorate of Object.keys(this.electorates)) {
                 // manual overrides
@@ -115,6 +118,10 @@ export default Vue.extend({
                 }
             }
             this.searchQueryResults = queryResults;
+        },
+
+        showAllElectorates() {
+            this.searchQueryResults = this.electorates;
         },
 
         displayMargin(margin: string): string {
@@ -139,7 +146,7 @@ export default Vue.extend({
         }
     },
     watch: {
-        electorates: function() {
+        electorates() {
             this.calculateSearchQuery();
         }
     }

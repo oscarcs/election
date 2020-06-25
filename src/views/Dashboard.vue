@@ -68,7 +68,7 @@ export default Vue.extend({
                 return response.json();
             })
             .then(data => {
-                this.polls = data.rows.slice(0, 5);
+                this.polls = data.rows.slice(0, 1);
                 const pollingAverage = Util.calculatePollingAverage(this.polls);
                 this.predictedResult = Util.calculateSeatsFromPoll(pollingAverage, Util.guessElectorateSeats(pollingAverage));
                 this.predictedResult.parties.sort((a, b) => b.quota - a.quota);
@@ -106,7 +106,12 @@ export default Vue.extend({
         whosWinningText(): string {
             let str = '';
             if (this.predictedResult.parties) {
-                str = `Average number of seats on last ${this.polls.length} polls: `;
+                if (this.polls.length > 1) {
+                    str = `Average number of seats on last ${this.polls.length} polls: `;
+                }
+                else {
+                    str = `Number of seats on last poll: `;
+                }
                 
                 str += this.predictedResult.parties.map(x => {
                     return `<span class="has-text-${Util.getPartyTextCSSName(x.name)}">${Util.getPartyName(x.name)} ${x.quota}</span>`;

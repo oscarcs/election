@@ -13,6 +13,7 @@ $blue: #2C8ACA;
 $lightblue: #56D2FF;
 $yellow: #FFD100;
 $green: #2CC84D;
+$deepgreen: #047433;
 $charcoal: #1e1e21;
 $slate: #2a2a2e;
 
@@ -44,6 +45,7 @@ $colors: (
     "lightblue": ($lightblue, findColorInvert($lightblue)),
     "yellow": ($yellow, findColorInvert($yellow)),
     "green": ($green, findColorInvert($green)),
+    "deepgreen": ($deepgreen, findColorInvert($deepgreen)),
     "charcoal": ($charcoal, findColorInvert($charcoal)),
     "slate": ($slate, findColorInvert($slate)),
 
@@ -54,7 +56,7 @@ $colors: (
     "national": ($blue, findColorInvert($blue)),
     "act": ($yellow, findColorInvert($yellow)),
     "greens": ($green, findColorInvert($green)),
-    "nzf": ($charcoal, findColorInvert($charcoal)),
+    "nzf": (darken($charcoal, 5%), findColorInvert($charcoal)),
     "nc": ($lightblue, findColorInvert($lightblue)),
     "maori": ($darkred, findColorInvert($darkred)),
 );

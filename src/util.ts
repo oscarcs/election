@@ -80,7 +80,7 @@ export class Util {
             'NZF': 'nzf',
             'ACT': 'act',
             'NCP': 'nc',
-            'MRI': 'maori',
+            'MRI': 'lightred',
             'TOP': 'grey'
         };
         return cssNames[abbr.toUpperCase()] ?? abbr;
@@ -98,6 +98,18 @@ export class Util {
             'TOP': 'grey'
         };
         return cssNames[abbr.toUpperCase()] ?? abbr;
+    }
+
+    public static getLikelihoodCSSName(likelihood: string): string {
+        const cssNames: any = {
+            'near certain': 'deepgreen',
+            'highly likely': 'green',
+            'likely': 'green',
+            'fair': 'yellow',
+            'unlikely': 'orange2',
+            'highly unlikely': 'red'
+        };
+        return cssNames[likelihood.toLowerCase()] ?? 'light';
     }
 
     public static calculateMMP(parties: Party[], electorates: PartyElectorates[], totalVotes: number): Parliament {
@@ -263,5 +275,12 @@ export class Util {
                 seats: 0
             }
         ];
+    }
+
+    /**
+     * Return the estimated swing for the simplistic swing model.
+     */
+    public static getSimplisticSwing(): number {
+        return +5;
     }
 }
