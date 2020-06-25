@@ -48,9 +48,9 @@ export default Vue.extend({
     },
     data: function() {
         return {
-            electorates: {},
+            electorates: {} as any,
             searchQuery: '',
-            searchQueryResults: {}
+            searchQueryResults: {} as any
         };
     },
     mounted () {
@@ -80,24 +80,24 @@ export default Vue.extend({
         },
 
         getCandidates(electorate: any): any {
-            const candidates = {};
+            const candidates: any = {};
             for (const party of Object.keys(electorate)) {
                 if (this.isParty(party) && electorate[party] !== '') {
-                    (candidates as any)[party] = electorate[party];
+                    candidates[party] = electorate[party];
                 }
             }
             return candidates;
         },
 
         calculateSearchQuery() {
-            const queryResults = {};
+            const queryResults: any = {};
             if (this.searchQuery !== '' && this.searchQuery.length > 1) {
                 for (const electorate of Object.keys(this.electorates)) {
                     // Remove accents
                     const latinized = electorate.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
                     
                     if (latinized.toLowerCase().includes(this.searchQuery.toLowerCase())) {
-                        (queryResults as any)[electorate] = (this.electorates as any)[electorate];
+                        queryResults[electorate] = this.electorates[electorate];
                     }
                 }
             }
@@ -105,16 +105,16 @@ export default Vue.extend({
         },
 
         showMarginalElectorates() {
-            const queryResults = {};
+            const queryResults: any = {};
             for (const electorate of Object.keys(this.electorates)) {
                 // manual overrides
                 if (['Northland', 'Te Tai Hauāuru'].includes(electorate)) {
                     continue;
                 }
 
-                const margin = (this.electorates as any)[electorate]['margin'].split('+')[1];
+                const margin = this.electorates[electorate]['margin'].split('+')[1];
                 if (parseFloat(margin) <= 7.25 || ['Taieri', 'Nelson'].includes(electorate)) {
-                    (queryResults as any)[electorate] = (this.electorates as any)[electorate];
+                    queryResults[electorate] = this.electorates[electorate];
                 }
             }
             this.searchQueryResults = queryResults;
