@@ -5,8 +5,8 @@
                 <p class="is-size-5">Party Lists</p>
                 <p><i>The deadline for the political parties to submit their nominations for the party lists is 21 August.</i></p>
                 <!-- <p><i>'Chances' estimates are a rough guide only, based on a very simplistic electorate swing model.</i></p> -->
-                <b-field class="mt-1 mb-1">
-                    <p class="control">
+                <b-field class="mt-1 mb-1" grouped>
+                    <b-field>
                         <b-dropdown>
                             <button class="button" :class="[`is-${getPartyCSSName(selectedParty)}`]" slot="trigger" slot-scope="{ active }">
                                 <span class="mr-1">{{getPartyName(selectedParty)}}</span>
@@ -18,12 +18,17 @@
                                 {{getPartyName(party)}} ({{lists[party].length}})
                             </b-dropdown-item>
                         </b-dropdown>
-                    </p>
-                    <!-- <b-input
-                        placeholder="Estimated Number of Seats"
-                        v-model="currentSeats"
-                        @input="calculateListData"
-                    ></b-input> -->
+                    </b-field>
+                    <b-field horizontal>
+                        <template slot="label">
+                            <span style="white-space: nowrap; color: white;">Predicted number of seats:</span>
+                        </template>
+                        <b-input
+                            v-model="currentSeats"
+                            @input="calculateListData"
+                            type="number"
+                        ></b-input>
+                    </b-field>
                 </b-field>
                 <div class="dark">
                     <b-table
@@ -41,15 +46,21 @@
                                 :cell-class="`has-text-${getPartyTextCSSName(props.row.winningParty)}`"
                                 field="winningParty"
                                 label="2017 Winner"
+                                centered
                             >
                                 {{getPartyName(props.row.winningParty)}}
                             </b-table-column>
-                            <b-table-column :cell-class="props.row.marginClass" field="margin" label="2017 Margin">
+                            <b-table-column numeric :style="props.row.marginStyle" field="margin" label="2017 Margin">
                                 {{props.row.margin}}
                             </b-table-column>
-                            <!-- <b-table-column :cell-class="props.row.likelihoodClass" field="likelihood" :label="`Chances`">
+                            <b-table-column
+                                centered
+                                :cell-class="props.row.likelihoodClass"
+                                field="likelihood"
+                                :label="`Likelihood of Election`"
+                            >
                                 {{props.row.likelihood}}
-                            </b-table-column> -->
+                            </b-table-column>
                         </template>
                     </b-table>
                 </div>
@@ -63,11 +74,103 @@ import Vue from 'vue';
 import Config from '@/config';
 import { Util } from '@/util';
 
+interface CandidateInfo {
+    electorate: string;
+    party: string;
+    margin: number | 'new';
+    winningParty: string;
+}
+
 export default Vue.extend({
     name: "Lists",
     components: {},
     computed: {
+        likelihoods(): any {
+            const l: any = {};
+            const list = this.lists[this.selectedParty];
 
+            let likelyElected = 0;
+
+            for (const candidate of list) {
+                l[candidate] = 0;
+
+                const data = this.getCandidateData(candidate);
+                if (data) {
+                    if (data.winningParty === data.party) {
+                        if (data.margin > 20) {
+                            l[candidate] = 5;
+                            likelyElected++;
+                        }
+                        else if (data.margin > 11) {
+                            l[candidate] = 4;
+                            likelyElected++;
+                        }
+                        else if (data.margin > 5) {
+                            l[candidate] = 3;
+                            likelyElected++;
+                        }
+                    } 
+                    //@@TODO: make this more generic
+                    else if (data.winningParty === 'nat' && data.party === 'lab') {
+                        if (data.margin < 4.6) {
+                            l[candidate] = 3;
+                            likelyElected++;
+                        }
+                        else if (data.margin < 6) {
+                            l[candidate] = 2;
+                            likelyElected++;
+                        }
+                    }
+                }
+            }
+
+            let remaining = this.currentSeats - likelyElected;
+
+            if (remaining > 0) {                
+                for (const candidate of list) {
+                    remaining = this.currentSeats - likelyElected;
+
+                    let newVal = 0;
+                    if (remaining <= -6) {
+                        newVal = 0;
+                    }
+                    else if (remaining <= -1) {
+                        newVal = 1;
+                    }
+                    else if (remaining <= 2) {
+                        newVal = 2;
+                    }
+                    else {
+                        newVal = 3;
+                    }
+
+                    if (newVal > l[candidate]) {
+                        likelyElected++;
+                        l[candidate] = newVal;
+                    }
+    
+                    if (remaining > 15) {
+                        l[candidate] = 5;
+                    }
+                    else if (remaining > 10) {
+                        l[candidate] = 4;
+                    }
+                }
+            }
+
+            for (const candidate of list) {
+                switch (l[candidate]) {
+                case 5: l[candidate] = 'Near Certain'; break;
+                case 4: l[candidate] = 'Highly Likely'; break;
+                case 3: l[candidate] = 'Likely'; break;
+                case 2: l[candidate] = 'Fair'; break;
+                case 1: l[candidate] = 'Unlikely'; break;
+                case 0: l[candidate] = 'Highly Unlikely'; break;
+                }
+            }
+
+            return l;
+        }
     },
     data: function() {
         return {
@@ -85,7 +188,7 @@ export default Vue.extend({
                 'act': 4,
                 'nzf': 0
             } as any,
-            currentSeats: 60,
+            currentSeats: 62
         };
     },
     mounted () {
@@ -123,7 +226,7 @@ export default Vue.extend({
 
         changeSelectedParty: function(party: string) {
             this.selectedParty = party;
-            this.currentSeats = this.currentSeatDefaults[this.selectedParty];
+            this.currentSeats = this.currentSeatDefaults[party];
             this.calculateListData();
         },
 
@@ -140,86 +243,92 @@ export default Vue.extend({
                     likelihood: this.getLikelihoodByCandidate(candidate),
                 };
                 
-                el.marginClass = this.getMarginClassByMargin(el.margin);
-                el.likelihoodClass = this.getLikelihoodClassByLikelihood(el.likelihood);
+                el.marginStyle = this.getMarginStyle(el.margin);
+                el.likelihoodClass = this.getLikelihoodClass(el.likelihood);
 
                 listData.push(el);
             }
             this.listData = listData;
         },
 
-        getElectorateByCandidate(candidate: string): string {
+        getCandidateData(candidate: string): CandidateInfo | undefined {
             for (const electorate of Object.keys(this.electorates)) {
                 for (const party of Object.keys(this.electorates[electorate])) {
                     if (Util.isParty(party)) {
                         if (this.electorates[electorate][party] === candidate) {
-                            return electorate;
+
+                            const margin = this.electorates[electorate]['margin'];
+
+                            return {
+                                electorate: electorate,
+                                party: party,
+                                margin: margin === 'new' ? 'new' : parseFloat(margin.split('+')[1]),
+                                winningParty: margin === 'new' ? '—' : margin.split('/')[0] 
+                            };
                         }
                     }
                 }
+            }
+
+            return undefined;
+        },
+
+        getElectorateByCandidate(candidate: string): string {
+            const res = this.getCandidateData(candidate);
+            if (res) {
+                return res.electorate;
+            }
+            return '';
+        },
+
+        getPartyByCandidate(candidate: string): string {
+            const res = this.getCandidateData(candidate);
+            if (res) {
+                return res.party;
             }
             return '';
         },
 
         getMarginByCandidate(candidate: string): string {
-            const res = this.getElectorateByCandidate(candidate);
-            if (res !== '') {
-                const margin = this.electorates[res]['margin'];
-                if (margin === 'new') {
-                    return 'New Electorate';
-                }
-                else {
-                    const marginPct = margin.split('+')[1];
-                    return Util.getPartyName(marginPct) + '%';
-                }
+            const res = this.getCandidateData(candidate);
+            if (res) {
+                return res.margin === 'new' ? 'New Electorate' : `${res.margin}%`;
             }
             return '';
         },
 
         getWinningPartyByCandidate(candidate: string): string {
-            const res = this.getElectorateByCandidate(candidate);
-            if (res !== '') {
-                const margin = this.electorates[res]['margin'];
-                if (margin === 'new') {
-                    return '—';
-                }
-                else {
-                    const party = margin.split('/')[0];
-                    return party;
-                }
+            const res = this.getCandidateData(candidate);
+            if (res) {
+                return res.winningParty;
             }
             return '';
         },
 
         getLikelihoodByCandidate(candidate: string): string {
-            return 'Fair';
+            return this.likelihoods[candidate];
         },
 
-        getMarginClassByMargin(margin: string): string {
-            let c = 'has-text-light';
+        getMarginStyle(margin: string): any {
+            let c = 'white';
             const m = parseFloat(margin);
             if (!isNaN(m)) {
-                c = 'has-text-';
-                if (m > 20) {
-                    c += Util.getLikelihoodCSSName('near certain');
-                }
-                else if (m > 12) {
-                    c += Util.getLikelihoodCSSName('likely');
-                }
-                else if (m > 7.5) {
-                    c += Util.getLikelihoodCSSName('fair');
-                }
-                else if (m > 5.5) {
-                    c += Util.getLikelihoodCSSName('unlikely');
+                let h;
+                if (m > 15) {
+                    h = 120;
                 }
                 else {
-                    c += Util.getLikelihoodCSSName('highly unlikely');
+                    h = Math.round(((m / 15) * 45) / 15) * 15;
                 }
+                c = `hsl(${h}, 90%, 50%)`;
             }
-            return c;
+
+            return {
+                color: c
+            };
         },
 
-        getLikelihoodClassByLikelihood(likelihood: string) {
+        getLikelihoodClass(likelihood: string) {
             return `has-text-${Util.getLikelihoodCSSName(likelihood)}`;
         }
     }
