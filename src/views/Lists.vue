@@ -182,13 +182,13 @@ export default Vue.extend({
             
             //@@TODO: calculate this from polling data!
             currentSeatDefaults: {
-                'lab': 62,
-                'nat': 47,
-                'grn': 7,
-                'act': 4,
+                'lab': 69,
+                'nat': 34,
+                'grn': 11,
+                'act': 6,
                 'nzf': 0
             } as any,
-            currentSeats: 62
+            currentSeats: 69
         };
     },
     mounted () {

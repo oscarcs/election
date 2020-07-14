@@ -260,7 +260,7 @@ export class Util {
             },
             {
                 name: 'NAT',
-                seats: 38
+                seats: 30
             },
             {
                 name: 'ACT',
