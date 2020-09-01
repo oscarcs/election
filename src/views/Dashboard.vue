@@ -68,7 +68,7 @@ export default Vue.extend({
                 return response.json();
             })
             .then(data => {
-                this.polls = data.rows.slice(0, 1);
+                this.polls = data.rows.slice(0, 5);
                 const pollingAverage = Util.calculatePollingAverage(this.polls);
                 this.predictedResult = Util.calculateSeatsFromPoll(pollingAverage, Util.guessElectorateSeats(pollingAverage));
                 this.predictedResult.parties.sort((a, b) => b.quota - a.quota);
@@ -79,13 +79,13 @@ export default Vue.extend({
     },
     computed: {
         daysUntilElectionDay(): number {
-            const electionDay = moment("2020-09-19");
+            const electionDay = moment("2020-10-17");
             const diff = electionDay.diff(moment(), "days", true);
             return Math.ceil(diff);
         },
 
         daysUntilVotingStarts(): number {
-            const votingStarts = moment("2020-09-05");
+            const votingStarts = moment("2020-10-03");
             const diff = votingStarts.diff(moment(), "days", true);
             return Math.ceil(diff);
         },
